@@ -13,6 +13,6 @@ def get_logger(name: str):
         )
 
         handler.setFormatter(formatter)
-        logger.addHandler
+        logger.addHandler(handler)
 
     return logger

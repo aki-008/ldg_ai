@@ -4,7 +4,6 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.models.item import User
 from app.services.logs import get_logger
-from pprint import pformat
 from app.core.config import settings
 
 logger = get_logger(__name__)
@@ -13,16 +12,19 @@ security = HTTPBearer()
 
 router = APIRouter()
 
-GOOGLE_CLIENT_ID = settings.google_client_id
+GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 
 
 async def get_current_user(token: HTTPAuthorizationCredentials = Depends(security)):
     try:
+        logger.info(f"Received Session Token: {token.credentials}")
         idinfo = id_token.verify_oauth2_token(
-            token.credentials, requests.Request(), GOOGLE_CLIENT_ID
+            token.credentials,
+            requests.Request(),
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10,
         )
-        logger.info("Google user verified!")
-        logger.debug(f"User ID Info Content:\n{pformat(idinfo)}")
+
         return User(
             id=idinfo["sub"],
             email=idinfo["email"],

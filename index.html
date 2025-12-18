@@ -29,7 +29,7 @@
             console.log("Encoded JWT ID token: " + response.credential);
 
             // 3. Send the token to your FastAPI backend
-            const res = await fetch("http://localhost:8000/users/me", {
+            const res = await fetch("http://localhost:8000/api/v1/auth/users/me",{
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${response.credential}`
