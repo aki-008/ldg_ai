@@ -8,9 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print("--- Connecting to DB ---")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    print("--- DB Connected ---")
+
     yield
+
+    print("--- Disposing DB Engine ---")
+    await engine.dispose()
+    print("--- DB Engine Disposed ---")
 
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
