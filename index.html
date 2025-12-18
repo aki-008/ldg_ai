@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sign-In Demo</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>Login with Google</h1>
+
+    <div id="g_id_onload"
+         data-client_id="816688516409-ricvk0jmetus1gh96vaep44vg03jc864.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+    </div>
+
+    <div id="result" style="margin-top: 20px; font-family: monospace;"></div>
+
+    <script>
+        // 2. This function runs when Google successfully logs the user in
+        async function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+
+            // 3. Send the token to your FastAPI backend
+            const res = await fetch("http://localhost:8000/users/me", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${response.credential}`
+                }
+            });
+
+            // 4. Display the result from Python
+            const data = await res.json();
+            document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
