@@ -7,9 +7,14 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str
     DATABASE_URL: str
 
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int  # Pydantic will convert "30" from .env to int 30
+
     class Config:
         env_file = ".env"
         extra = "ignore"
 
 
+# Instantiate settings
 settings = Settings()
