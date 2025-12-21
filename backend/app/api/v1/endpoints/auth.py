@@ -8,7 +8,7 @@ from app.services.logs import get_logger
 from app.core.config import settings
 from app.db.session import get_db
 from app.services.security import (
-    get_hased_password,
+    get_hashed_password,
     verify_password,
     create_access_token,
 )
@@ -36,10 +36,7 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(securit
         )
 
         return CreateUser(
-            id=idinfo["sub"],
-            email=idinfo["email"],
-            name=idinfo.get("name", "Unknown"),
-            picture=idinfo.get("picture", ""),
+            id=idinfo["sub"], email=idinfo["email"], name=idinfo.get("name", "Unknown")
         )
     except ValueError as e:
         raise HTTPException(
@@ -66,12 +63,12 @@ async def sign_up(user: CreateUser, db: AsyncSession = Depends(get_db)):
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already registered",
+                detail="Email already registered",
             )
         new_user = User(
             username=user.username,
             email=user.email,
-            hashed_password=get_hased_password(user.password),
+            hashed_password=get_hashed_password(user.password),
         )
         db.add(new_user)
         await db.commit()
