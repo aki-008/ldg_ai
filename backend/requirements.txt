@@ -11,9 +11,6 @@ chromadb
 pydantic[email]
 sentence-transformers
 openai
-asyncpg
-passlib
-python-jose[cryptography]
 python-multipart
 pymupdf
 llama-index-core
