@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.api.v1.api import api_router
 from app.db.session import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 
 
 @asynccontextmanager
@@ -14,6 +15,7 @@ async def lifespan(app: FastAPI):
     print("--- DB Connected ---")
 
     yield
+    print("🧹 Server shutting down:", datetime.now())
 
     print("--- Disposing DB Engine ---")
     await engine.dispose()
