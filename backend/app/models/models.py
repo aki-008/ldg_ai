@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import Optional
 
 
 class CreateUser(BaseModel):
@@ -22,3 +23,12 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str
     username: str
+
+
+class UserResponse(BaseModel):
+    username: str
+    email: EmailStr
+    picture: Optional[str] = None
+
+    class Config:
+        from_attributes = True
