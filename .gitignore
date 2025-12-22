@@ -217,3 +217,4 @@ __marimo__/
 
 test.db
 g-auth.txt
+backend/1.env
