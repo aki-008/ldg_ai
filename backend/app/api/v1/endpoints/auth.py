@@ -40,6 +40,7 @@ async def get_current_user(
     token_str = token.credentials
 
     try:
+        # 1. Try decoding as a local App JWT (normal login)
         payload = jwt.decode(
             token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
@@ -70,8 +71,9 @@ async def get_current_user(
                 "email": idinfo["email"],
                 "picture": idinfo.get("picture", ""),
             }
+
         except ValueError as e:
-            logger.error(f"Token verification failed:{e}")
+            logger.error(f"Token verification failed: {e}")
             raise credentials_exception
 
 
@@ -99,13 +101,13 @@ async def sign_up(user: CreateUser, db: AsyncSession = Depends(get_db)):
         db.add(new_user)
         await db.commit()
 
-        return {"message": "User registered sucessfully", "username": user.username}
+        return {"message": "User registered successfully", "username": user.username}
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"registered failed: {str(e)}",
+            detail=f"Registration failed: {str(e)}",
         )
 
 
