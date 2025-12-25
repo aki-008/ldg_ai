@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext"; // Import Auth Context
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { user, logout } = useAuth(); // Get user and logout function
 
   // Helper for active styling
   const getLinkClasses = (path: string) => {
@@ -26,10 +28,7 @@ export default function Sidebar() {
         isCollapsed ? "w-[80px]" : "w-[250px]"
       }`}
     >
-      {/* Header / Toggle Section
-         - Expanded: Row layout (Logo Left, Button Right)
-         - Collapsed: Column layout (Logo Top, Button Bottom)
-      */}
+      {/* Header / Toggle Section */}
       <div
         className={`flex ${
           isCollapsed
@@ -50,7 +49,6 @@ export default function Sidebar() {
           className="text-gray-400 hover:text-white transition p-1.5 rounded-md hover:bg-[#222]"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
-          {/* Hamburger Icon (when collapsed) / Panel Icon (when expanded) */}
           <svg
             className="w-6 h-6"
             fill="none"
@@ -135,18 +133,61 @@ export default function Sidebar() {
 
       {/* Bottom Account Section */}
       <div className="p-4 mt-auto border-t border-[#222]">
-        <button
-          className={`flex items-center w-full text-left py-2 text-gray-400 hover:bg-[#111] rounded hover:text-white transition ${
-            isCollapsed ? "justify-center" : "px-2"
-          }`}
+        <div
+          className={`flex flex-col gap-2 ${isCollapsed ? "items-center" : ""}`}
         >
-          <div className="h-8 w-8 rounded-full bg-[#111] border border-gray-600 flex items-center justify-center text-xs text-white shrink-0">
-            N
+          {/* User Info */}
+          <div
+            className={`flex items-center w-full text-left py-2 text-gray-400 ${
+              isCollapsed ? "justify-center" : "px-2"
+            }`}
+          >
+            {user?.picture ? (
+              <img
+                src={user.picture}
+                alt="User"
+                className="h-8 w-8 rounded-full border border-gray-600 shrink-0"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-[#333] border border-gray-600 flex items-center justify-center text-xs text-white shrink-0">
+                {user?.username?.charAt(0).toUpperCase() || "U"}
+              </div>
+            )}
+
+            {!isCollapsed && (
+              <div className="ml-3 overflow-hidden">
+                <p className="text-sm font-medium text-white truncate">
+                  {user?.username}
+                </p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              </div>
+            )}
           </div>
-          {!isCollapsed && (
-            <span className="ml-3 text-sm font-medium truncate">Account</span>
-          )}
-        </button>
+
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            className={`flex items-center text-red-400 hover:bg-[#222] hover:text-red-300 rounded py-2 transition ${
+              isCollapsed ? "justify-center w-8 h-8" : "w-full px-2"
+            }`}
+            title="Logout"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            {!isCollapsed && <span className="ml-3 text-sm">Logout</span>}
+          </button>
+        </div>
       </div>
     </aside>
   );
