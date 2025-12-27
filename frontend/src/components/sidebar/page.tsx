@@ -89,8 +89,8 @@ export default function Sidebar() {
         </Link>
 
         {/* New */}
-        <Link href="/generate" className={getLinkClasses("/generate")}>
-          {pathname === "/generate" && (
+        <Link href="/newdocuments" className={getLinkClasses("/newdocuments")}>
+          {pathname === "/newdocuments" && (
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600"></div>
           )}
           <svg

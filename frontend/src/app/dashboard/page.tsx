@@ -51,7 +51,7 @@ export default function DashboardPage() {
             </p>
             <div className="flex justify-center gap-4">
               <Link
-                href="/generate"
+                href="/newdocuments"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition"
               >
                 Create New
