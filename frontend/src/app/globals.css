@@ -25,7 +25,9 @@ html.dark {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
 
 /* Smooth transitions for theme switching */
@@ -53,4 +55,146 @@ body > div {
 ::-webkit-scrollbar-thumb:hover {
   background: #000;
 }
+
+/* Editor Content Styling */
+.editor-content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #000;
+}
+
+.editor-content p {
+  margin: 0.8rem 0;
+  line-height: 1.8;
+}
+
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6 {
+  margin: 1.2rem 0 0.6rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.editor-content h1 {
+  font-size: 2em;
+}
+
+.editor-content h2 {
+  font-size: 1.5em;
+}
+
+.editor-content h3 {
+  font-size: 1.25em;
+}
+
+.editor-content ul,
+.editor-content ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.editor-content li {
+  margin: 0.4rem 0;
+  line-height: 1.8;
+}
+
+.editor-content strong {
+  font-weight: 600;
+  color: #000;
+}
+
+.editor-content em {
+  font-style: italic;
+  color: #000;
+}
+
+.editor-content u {
+  text-decoration: underline;
+}
+
+.editor-content s {
+  text-decoration: line-through;
+}
+
+.editor-content blockquote {
+  border-left: 4px solid #000;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #333;
+}
+
+.editor-content code {
+  background-color: #f3f4f6;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: "Monaco", "Courier New", monospace;
+  font-size: 0.9em;
+}
+
+.editor-content pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.editor-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.editor-content mark {
+  background-color: #fef08a;
+  padding: 0.2rem;
+}
+
+.editor-content a {
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.editor-content a:hover {
+  color: #0052a3;
+}
+
+/* ProseMirror specific styles */
+.ProseMirror {
+  outline: none;
+  position: relative;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror-selectednode {
+  background-color: #ebedf0;
+}
+
+.ProseMirror-gapcursor {
+  display: none;
+}
+
+.ProseMirror-gapcursor:after {
+  content: "";
+  display: block;
+  height: 0;
+  position: relative;
+  pointer-events: none;
+}
+
 
