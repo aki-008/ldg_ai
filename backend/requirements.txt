@@ -23,3 +23,4 @@ pyaudio
 SpeechRecognition
 vapi-python
 vapi_server_sdk
+google-auth
