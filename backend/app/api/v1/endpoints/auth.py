@@ -28,23 +28,71 @@ router = APIRouter()
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 
 
+# async def get_current_user(
+#     token: HTTPAuthorizationCredentials = Depends(security),
+#     db: AsyncSession = Depends(get_db),
+# ) -> Union[User, dict]:
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     token_str = token.credentials
+
+#     try:
+#         # 1. Try decoding as a local App JWT (normal login)
+#         payload = jwt.decode(
+#             token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+#         )
+
+#         username: str = payload.get("sub")
+#         if username is None:
+#             raise credentials_exception
+
+#         result = await db.execute(select(User).filter(User.username == username))
+#         user = result.scalar_one_or_none()
+
+#         if user is None:
+#             raise credentials_exception
+
+#         return user
+
+#     except (JWTError, AttributeError):
+#         try:
+#             idinfo = id_token.verify_oauth2_token(
+#                 token_str,
+#                 requests.Request(),
+#                 GOOGLE_CLIENT_ID,
+#                 clock_skew_in_seconds=10,
+#             )
+
+#             return {
+#                 "username": idinfo.get("name", "Google User"),
+#                 "email": idinfo["email"],
+#                 "picture": idinfo.get("picture", ""),
+#             }
+
+#         except ValueError as e:
+#             logger.error(f"Token verification failed: {e}")
+#             raise credentials_exception
+
+
 async def get_current_user(
     token: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db),
-) -> Union[User, dict]:
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    token_str = token.credentials
 
     try:
-        # 1. Try decoding as a local App JWT (normal login)
         payload = jwt.decode(
-            token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token.credentials,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
         )
-
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
@@ -57,24 +105,8 @@ async def get_current_user(
 
         return user
 
-    except (JWTError, AttributeError):
-        try:
-            idinfo = id_token.verify_oauth2_token(
-                token_str,
-                requests.Request(),
-                GOOGLE_CLIENT_ID,
-                clock_skew_in_seconds=10,
-            )
-
-            return {
-                "username": idinfo.get("name", "Google User"),
-                "email": idinfo["email"],
-                "picture": idinfo.get("picture", ""),
-            }
-
-        except ValueError as e:
-            logger.error(f"Token verification failed: {e}")
-            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
 
 
 @router.get("/users/me", response_model=UserResponse)
@@ -139,3 +171,53 @@ async def sign_in(request: LoginRequest, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Login failed: {str(e)}",
         )
+
+
+@router.post("/google_login", response_model=LoginResponse)
+async def google_login(
+    token: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        token_str = token.credentials
+
+        idinfo = id_token.verify_oauth2_token(
+            token_str,
+            requests.Request(),
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10,
+        )
+
+        google_id = idinfo["sub"]
+        email = idinfo["email"]
+        name = idinfo.get("name", "GoogleUser")
+
+        result = await db.execute(select(User).filter(User.google_id == google_id))
+        user = result.scalar_one_or_none()
+
+        if not user:
+            user = User(
+                username=name,
+                email=email,
+                google_id=google_id,
+                auth_provider="google",
+            )
+
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+
+        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+        access_token = create_access_token(
+            data={"sub": user.username},
+            expires_delta=access_token_expires,
+        )
+
+        return LoginResponse(
+            access_token=access_token,
+            token_type="bearer",
+            username=user.username,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Google login failed: {str(e)}")

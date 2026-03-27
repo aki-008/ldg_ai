@@ -1,7 +1,7 @@
 from sqlalchemy import String, LargeBinary, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from app.db.session import Base
 
 
@@ -11,11 +11,16 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(100), unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(255))
+    hashed_password: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    case_dir: Mapped[List["Case_dir"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+    google_id: Mapped[Optional[str]] = mapped_column(
+        String(255), unique=True, nullable=True
     )
+
+    auth_provider: Mapped[str] = mapped_column(String(20), default="local")
+    # case_dir: Mapped[List["Case_dir"]] = relationship(
+    #     back_populates="user", cascade="all, delete-orphan"
+    # )
 
 
 class Case_dir(Base):
