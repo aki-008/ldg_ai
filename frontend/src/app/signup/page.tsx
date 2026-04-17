@@ -23,14 +23,26 @@ export default function SignupPage() {
       return;
     }
 
+    // FIX 2: Added minimum password length validation
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
     setLoading(true);
     try {
       await signup(username, email, password);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      // FIX 3: Replaced `err: any` with proper TypeScript type narrowing
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  // FIX 5: Helper to clear stale errors when user starts typing
+  const clearError = () => {
+    if (error) setError("");
   };
 
   return (
@@ -74,7 +86,13 @@ export default function SignupPage() {
                 type="text"
                 required
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                // FIX 1: Added autoComplete attribute for browser/password manager support
+                autoComplete="username"
+                // FIX 5: Clear stale error when user starts typing
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  clearError();
+                }}
                 className="w-full pl-4 pr-4 py-2 border border-black rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
@@ -91,7 +109,13 @@ export default function SignupPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                // FIX 1: Added autoComplete attribute for browser/password manager support
+                autoComplete="email"
+                // FIX 5: Clear stale error when user starts typing
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearError();
+                }}
                 className="w-full pl-4 pr-4 py-2 border border-black rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
@@ -108,7 +132,13 @@ export default function SignupPage() {
                 type="password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                // FIX 1: Added autoComplete attribute for browser/password manager support
+                autoComplete="new-password"
+                // FIX 5: Clear stale error when user starts typing
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearError();
+                }}
                 className="w-full pl-4 pr-4 py-2 border border-black rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
@@ -125,7 +155,13 @@ export default function SignupPage() {
                 type="password"
                 required
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                // FIX 1: Added autoComplete attribute for browser/password manager support
+                autoComplete="new-password"
+                // FIX 5: Clear stale error when user starts typing
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  clearError();
+                }}
                 className="w-full pl-4 pr-4 py-2 border border-black rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
@@ -152,7 +188,12 @@ export default function SignupPage() {
               onSuccess={(credentialResponse) => {
                 if (credentialResponse.credential) {
                   loginWithGoogle(credentialResponse.credential).catch((err) =>
-                    setError(err.message)
+                    // FIX 3: Replaced implicit `any` with proper type narrowing
+                    setError(
+                      err instanceof Error
+                        ? err.message
+                        : "Google Signup Failed",
+                    ),
                   );
                 }
               }}
@@ -161,7 +202,7 @@ export default function SignupPage() {
               }}
               onNonOAuthError={() => {
                 setError(
-                  "Google popup was blocked by your browser. Allow popups for this site and try again."
+                  "Google popup was blocked by your browser. Allow popups for this site and try again.",
                 );
               }}
               theme="outline"
@@ -169,7 +210,7 @@ export default function SignupPage() {
               shape="rectangular"
               width="320"
               text="signup_with"
-              useOneTap={false}
+              // FIX 6: Removed `useOneTap={false}` — it is the default and was redundant
             />
           </div>
 
