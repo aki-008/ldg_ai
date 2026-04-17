@@ -80,9 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async (credential: string) => {
     try {
-      // Backend validates Google ID Token directly via /users/me logic
-      // We manually set the cookie first so the interceptor picks it up
-      Cookies.set("auth_token", credential, {
+      const loginRes = await api.post(
+        "/auth/google_login",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${credential}`,
+          },
+        }
+      );
+      const { access_token } = loginRes.data;
+
+      Cookies.set("auth_token", access_token, {
         expires: 1,
         secure: window.location.protocol === "https:",
         sameSite: "strict",

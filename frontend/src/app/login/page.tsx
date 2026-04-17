@@ -122,10 +122,16 @@ export default function LoginPage() {
               onError={() => {
                 setError("Google Login Failed");
               }}
+              onNonOAuthError={() => {
+                setError(
+                  "Google popup was blocked by your browser. Allow popups for this site and try again."
+                );
+              }}
               theme="outline"
               size="large"
               shape="rectangular"
               width="320"
+              useOneTap={false}
             />
           </div>
 

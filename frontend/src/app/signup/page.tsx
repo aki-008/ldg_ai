@@ -159,11 +159,17 @@ export default function SignupPage() {
               onError={() => {
                 setError("Google Signup Failed");
               }}
+              onNonOAuthError={() => {
+                setError(
+                  "Google popup was blocked by your browser. Allow popups for this site and try again."
+                );
+              }}
               theme="outline"
               size="large"
               shape="rectangular"
               width="320"
               text="signup_with"
+              useOneTap={false}
             />
           </div>
 

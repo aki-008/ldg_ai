@@ -23,29 +23,29 @@ class User(Base):
     # )
 
 
-class Case_dir(Base):
-    __tablename__ = "case_dirs"
+# class Case_dir(Base):
+#     __tablename__ = "case_dirs"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    dir_name: Mapped[str] = mapped_column(String(255))
+#     id: Mapped[int] = mapped_column(primary_key=True, index=True)
+#     dir_name: Mapped[str] = mapped_column(String(255))
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="case_dir")
+#     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+#     user: Mapped["User"] = relationship(back_populates="case_dir")
 
-    files: Mapped[List["File"]] = relationship(
-        back_populates="case_dir", cascade="all, delete-orphan"
-    )
+#     files: Mapped[List["File"]] = relationship(
+#         back_populates="case_dir", cascade="all, delete-orphan"
+#     )
 
 
-class File(Base):
-    __tablename__ = "files"
+# class File(Base):
+#     __tablename__ = "files"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    filename: Mapped[str] = mapped_column(String(255))
-    file_data: Mapped[bytes] = mapped_column(LargeBinary)
+#     id: Mapped[int] = mapped_column(primary_key=True)
+#     filename: Mapped[str] = mapped_column(String(255))
+#     file_data: Mapped[bytes] = mapped_column(LargeBinary)
 
-    uploaded_at: Mapped[datetime] = mapped_column(default=func.now())
+#     uploaded_at: Mapped[datetime] = mapped_column(default=func.now())
 
-    case_dir_id: Mapped[int] = mapped_column(ForeignKey("case_dirs.id"))
+#     case_dir_id: Mapped[int] = mapped_column(ForeignKey("case_dirs.id"))
 
-    case_dir: Mapped["Case_dir"] = relationship(back_populates="files")
+#     case_dir: Mapped["Case_dir"] = relationship(back_populates="files")
